@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Expenditure">
+	<resultMap type="com.oc.mine.entity.account.Expenditure" id="resultMap">
+		<id column="expenditure_id" property="id" javaType="Integer" />
+		<result column="expenditure_name" property="expenditure_name" javaType="String" />
+		<result column="expenditure_type" property="expenditure_type" javaType="Integer" />
+		<result column="expenditure_amount" property="expenditure_amount" javaType="Integer" />
+		<result column="expenditure_time" property="expenditure_time" javaType="java.time.LocalDateTime" />
+	</resultMap>
+
+	<!-- 基础查询 -->
+	<select id="list" parameterType="com.oc.mine.entity.account.Expenditure"
+		resultMap="resultMap">
+		select * from t_account_expenditure
+		<where>
+			<if test="expenditure_name != null and expenditure_name != ''">
+				AND expenditure_name like concat('%',#{expenditure_name},'%')
+			</if>
+			<if test="expenditure_type != null and expenditure_type != ''">
+				AND expenditure_type = expenditure_type
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查询月金额 -->
+	<select id="getMonthAmount" parameterType="String" resultType="Integer">
+		select 
+			SUM(expenditure_amount)
+		from 
+			t_account_expenditure
+		where
+			date_format(expenditure_time,'%Y%m') = #{date}
+	</select>
+	
+	<!-- 基础插入 -->
+	<insert id="insert" parameterType="com.oc.mine.entity.account.Expenditure">
+		insert into t_account_expenditure
+		(
+		expenditure_name,
+		expenditure_type,
+		expenditure_amount,
+		expenditure_time
+		)
+		values(
+		#{expenditure_name},
+		#{expenditure_type},
+		#{expenditure_amount},
+		now()
+		)
+	</insert>
+	
+	
+	<!-- 基础更新 -->
+	<update id="update" parameterType="com.oc.mine.entity.account.Expenditure">
+		update t_account_expenditure
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="expenditure_name != null">
+				,expenditure_name = #{expenditure_name}
+			</if>
+			<if test="expenditure_type != null">
+				,expenditure_type = #{expenditure_type}
+			</if>
+			<if test="expenditure_amount != null">
+				,expenditure_amount = #{expenditure_amount}
+			</if>
+		</trim>
+		where expenditure_id = #{id}
+	</update>
+	
+	<!-- 基础逻辑删除 -->
+	<delete id="delete" parameterType="Integer">
+		delete from t_account_purchase where expenditure_id = #{id}
+	</delete>
+
+	<!-- 基础批量删除 -->
+	<delete id="deleteAll" parameterType="java.util.ArrayList">
+		delete from t_account_purchase where expenditure_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Plan">
+	<resultMap type="com.oc.mine.entity.program.Plan" id="resultMap">
+		<id column="plan_id" property="id" javaType="Integer" />
+		<result column="plan_name" property="plan_name" javaType="String" />
+		<result column="plan_info" property="plan_info" javaType="String" />
+		<result column="plan_date" property="plan_date" javaType="java.time.LocalDate" />
+		<result column="plan_state" property="plan_state" javaType="Integer" />
+	</resultMap>
+
+	<!-- 基础查询 -->
+	<select id="list" parameterType="com.oc.mine.entity.program.Plan"
+		resultMap="resultMap">
+		select * from t_program_plan
+		<where>
+			<if test="plan_name != null and plan_name != ''">
+				AND plan_name like concat('%',#{plan_name},'%')
+			</if>
+			<if test="plan_info != null and plan_info != ''">
+				AND plan_info like concat('%',#{plan_info},'%')
+			</if>
+			<if test="plan_state != null and plan_state != ''">
+				AND plan_state = #{plan_state}
+			</if>
+		</where>
+		order by plan_date 
+	</select>
+	
+	<!-- 基础插入 -->
+	<insert id="insert" parameterType="com.oc.mine.entity.program.Plan">
+		insert into t_program_plan
+		(
+		plan_name,
+		plan_info,
+		plan_date,
+		plan_state
+		)
+		values(
+		#{plan_name},
+		#{plan_info},
+		#{plan_date},
+		#{plan_state}
+		)
+	</insert>
+	
+	
+	<!-- 基础更新 -->
+	<update id="update" parameterType="com.oc.mine.entity.program.Plan">
+		update t_program_plan
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="plan_name != null">
+				,plan_name = #{plan_name}
+			</if>
+			<if test="plan_info != null">
+				,plan_info = #{plan_info}
+			</if>
+			<if test="plan_date != null">
+				,plan_date = #{plan_date}
+			</if>
+			<if test="plan_state != null">
+				,plan_state = #{plan_state}
+			</if>
+		</trim>
+		where plan_id = #{id}
+	</update>
+	
+	<!-- 基础逻辑删除 -->
+	<delete id="delete" parameterType="Integer">
+		delete from t_program_plan where plan_id = #{id}
+	</delete>
+
+	<!-- 基础批量删除 -->
+	<delete id="deleteAll" parameterType="java.util.ArrayList">
+		delete from t_program_plan where plan_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

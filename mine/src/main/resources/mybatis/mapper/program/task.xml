@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Task">
+	<resultMap type="com.oc.mine.entity.program.Task" id="resultMap">
+		<id column="task_id" property="id" javaType="Integer" />
+		<result column="task_name" property="task_name" javaType="String" />
+		<result column="task_info" property="task_info" javaType="String" />
+		<result column="task_time_type" property="time_type" javaType="Integer" />
+		<result column="task_complete_count" property="complete_count" javaType="Integer" />
+		<result column="task_forget_count" property="forget_count" javaType="Integer" />
+		<result column="task_record_time" property="record_time" javaType="java.time.LocalDateTime" />
+		<result column="task_state" property="task_state" javaType="Integer" />
+	</resultMap>
+
+	<!-- 基础查询 -->
+	<select id="list" parameterType="com.oc.mine.entity.program.Task"
+		resultMap="resultMap">
+		select * from t_program_task
+		<where>
+			<if test="task_name != null and task_name != ''">
+				AND task_name like '%'||#{task_name}||'%'
+			</if>
+			<if test="task_info != null and task_info != ''">
+				AND task_info like '%'||#{task_info}||'%'
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查询今日未完成任务 -->
+	<select id="getTodayTask" parameterType="com.oc.mine.entity.program.Task" resultMap="resultMap">
+		SELECT
+			task_name 
+		FROM
+			t_program_task 
+		WHERE
+			<![CDATA[
+			to_days( NOW( ) ) - task_time_type - to_days( task_record_time ) < 0 
+			AND task_complete_state <> 1 
+			  ]]>
+	</select>
+	
+	<!--查询未完成任务 -->
+	<select id="getUnfinishedTask" parameterType="com.oc.mine.entity.program.Task"
+		resultMap="resultMap">
+		select * from t_program_task where task_complete_state = 0
+	</select>
+	
+	<!-- 基础插入 -->
+	<insert id="insert" parameterType="com.oc.mine.entity.program.Task">
+		insert into t_program_task
+		(
+		task_name,
+		task_info,
+		task_time_type,
+		task_complete_state,
+		task_complete_count,
+		task_forget_count,
+		task_record_time.
+		)
+		values(
+		#{task_name},
+		#{task_info},
+		#{time_type},
+		0,
+		0,
+		0,
+		now()
+		)
+	</insert>
+	
+	
+	<!-- 基础更新 -->
+	<update id="update" parameterType="com.oc.mine.entity.program.Task">
+		update t_program_task
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="task_name != null">
+				,task_name = #{task_name}
+			</if>
+			<if test="task_info != null">
+				,task_info = #{task_info}
+			</if>
+			<if test="time_type != null">
+				,task_time_type = #{time_type}
+			</if>
+		</trim>
+		where task_id = #{id}
+	</update>
+	
+	<!-- 基础逻辑删除 -->
+	<delete id="delete" parameterType="Integer">
+		delete from t_program_task where
+		task_id = #{id}
+	</delete>
+
+	<!-- 基础批量删除 -->
+	<delete id="deleteAll" parameterType="java.util.ArrayList">
+		delete from t_program_task where task_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

@@ -1,0 +1,15 @@
+logging: 
+#  file: springboot.log #默认在项目文件夹下
+  level:
+    com.oc.mine.base.dao: debug
+mybatis: #mybatis配置
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*/*.xml
+server:
+  port: 8088 
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: ZhenShi123
+    url: jdbc:mysql://rm-uf6v2t63718e63qw2vo.mysql.rds.aliyuncs.com:3306/base_space
+    username: linhai

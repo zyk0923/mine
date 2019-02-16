@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EncyInfo">
+	<resultMap type="com.oc.mine.entity.ency.EncyInfo" id="resultMap">
+		<id column="info_id" property="id" javaType="Integer" />
+		<result column="info_name" property="info_name" javaType="String" />
+		<result column="info_remark" property="info_remark" javaType="String" />
+		<result column="info_conect" property="info_conect" javaType="String" />
+	</resultMap>
+
+	<!-- 基础查询 -->
+	<select id="list" parameterType="com.oc.mine.entity.ency.EncyInfo"
+		resultMap="resultMap">
+		select * from t_ency_info
+		<where>
+			<if test="ency_name != null and ency_name != ''">
+				AND ency_name like '%'||#{ency_name}||'%'
+			</if>
+		</where>
+	</select>
+	
+	<!-- 基础插入 -->
+	<insert id="insert" parameterType="com.oc.mine.entity.ency.EncyInfo">
+		insert into t_ency_info
+		(
+		info_name,
+		info_remark,
+		info_conect
+		)
+		values(
+		#{info_name},
+		#{info_remark},
+		#{info_conect}
+		)
+	</insert>
+	
+	
+	<!-- 基础更新 -->
+	<update id="update" parameterType="com.oc.mine.entity.ency.EncyInfo">
+		update t_ency_info
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="info_name != null">
+				,info_name = #{info_name}
+			</if>
+			<if test="info_remark != null">
+				,info_remark = #{info_remark}
+			</if>
+			<if test="info_conect != null">
+				,info_conect = #{info_conect}
+			</if>
+		</trim>
+		where info_id = #{id}
+	</update>
+	
+	<!-- 基础逻辑删除 -->
+	<delete id="delete" parameterType="Integer">
+		delete from t_ency_info where info_id = #{id}
+	</delete>
+
+	<!-- 基础批量删除 -->
+	<delete id="deleteAll" parameterType="java.util.ArrayList">
+		delete from t_ency_info where info_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

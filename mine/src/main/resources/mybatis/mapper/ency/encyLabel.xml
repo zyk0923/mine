@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EncyLabel">
+	<resultMap type="com.oc.mine.entity.ency.EncyLabel" id="resultMap">
+		<id column="label_id" property="id" javaType="Integer" />
+		<result column="label_name" property="label_name" javaType="String" />
+	</resultMap>
+
+	<!-- 基础查询 -->
+	<select id="list" parameterType="com.oc.mine.entity.ency.EncyLabel"
+		resultMap="resultMap">
+		select * from t_ency_label
+		<where>
+			<if test="label_name != null and label_name != ''">
+				AND label_name like concat('%',#{label_name},'%')
+			</if>
+		</where>
+	</select>
+	
+	<!-- 基础插入 -->
+	<insert id="insert" parameterType="com.oc.mine.entity.ency.EncyLabel">
+		insert into t_ency_label
+		(
+		label_name
+		)
+		values(
+		#{label_name}
+		)
+	</insert>
+	
+	
+	<!-- 基础更新 -->
+	<update id="update" parameterType="com.oc.mine.entity.ency.EncyLabel">
+		update t_ency_label
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="label_name != null">
+				,label_name = #{label_name}
+			</if>
+		</trim>
+		where label_id = #{id}
+	</update>
+	
+	<!-- 基础逻辑删除 -->
+	<delete id="delete" parameterType="Integer">
+		delete from t_ency_label where label_id = #{id}
+	</delete>
+
+	<!-- 基础批量删除 -->
+	<delete id="deleteAll" parameterType="java.util.ArrayList">
+		delete from t_ency_label where label_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>
